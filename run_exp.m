@@ -27,15 +27,16 @@ try
         end
         % get the most recent presses/releases
         [~, presses] = kbrd.Check;
-        
         % state machine
         switch state
-            case 'pretrial'
-            case 'intrial' 
-            case 'posttrial'
-            case 'feedback'
+            case 'pretrial' % single-frame setup for trial
+            case 'intrial' % dynamic bit
+            case 'feedback' % show feedback & wait
         end
         
+        window_time = win.Flip(window_time + 0.8 * win.flip_interval);
+        % compare using this time for showing things
+        approx_next_frame_time = window_time + win.flip_interval;
     end
 
     % cleanup

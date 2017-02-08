@@ -37,9 +37,9 @@ win = PobWindow('screen', max(Screen('screens')), ...
 
 %% Set up audio
 aud = PobAudio;
-snd0 = GenClick(1046, 0.45, 3);
+snd0 = GenClick(1046, 1/2, 3);
 last_beep = (length(snd0) - 0.02 * 44100)/44100;
-snd1 = audioread('misc/sounds/smw_coin.wav');
+snd1 = audioread('audio/smw_coin.wav');
 aud.Add('slave', 1);
 aud.Add('slave', 2);
 aud.Add('buffer', 1, 'audio', [snd0; snd0]);
