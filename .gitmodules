@@ -1,0 +1,6 @@
+[submodule "Psychoobox"]
+	path = Psychoobox
+	url = https://github.com/aforren1/Psychoobox
+[submodule "ptbutils"]
+	path = ptbutils
+	url = https://github.com/aforren1/ptbutils
