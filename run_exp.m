@@ -25,16 +25,41 @@ try
             % end of experiment
             break;
         end
+        % bail out by holding esc
+        tmp = KbCheck();
+        if tmp
+            break;
+        end
+
         % get the most recent presses/releases
         [~, presses] = kbrd.Check;
         % state machine
         switch state
             case 'pretrial' % single-frame setup for trial
+                
+                state = 'intrial';
             case 'intrial' % dynamic bit
+                if enter_intrial
+                    frame = 1;
+                    
+                end
+
+                if exit_intrial
+             
+                end
             case 'feedback' % show feedback & wait
+                if enter_feedback
+
+                end
+
+                if exit_feedback
+                    frame = 0;
+                    trial_count = trial_count + 1;
+                end
         end
         
         window_time = win.Flip(window_time + 0.8 * win.flip_interval);
+        frame = frame + 1;
         % compare using this time for showing things
         approx_next_frame_time = window_time + win.flip_interval;
     end

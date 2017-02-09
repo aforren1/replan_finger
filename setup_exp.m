@@ -120,5 +120,12 @@ blank_imgs.Prime();
 info_txt.Register(win.pointer);
 go_cue.Register(win.pointer);
 
+% bailer
+KbName('UnifyKeyNames');
+RestrictKeysForKbCheck(KbName({'ESCAPE'}));
+
 %TODO: handle data storage
 
+% transition conditions
+
+enter_intrial = @() 
