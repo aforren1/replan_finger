@@ -103,9 +103,9 @@ info_txt = PobText('value', helptext, 'size', 50, ...
                    'style', 'bold');
 
 % hardcoded indices at present, in the future parse unique(tgt.finger)?
-kbrd = BlamForceboard([1:10]);
+kbrd = BlamForceboard(1:10);
 
-go_cue =  PobText('value', '+', 'size', 160, ...
+fix_cross =  PobText('value', '+', 'size', 160, ...
                    'color', [255 255 255], ...
                    'rel_x_pos', 0.5, ...
                    'rel_y_pos', 0.5, ...
@@ -119,7 +119,7 @@ blank_imgs.Register(win.pointer);
 blank_imgs.Prime();
 % imgs.Draw(index); % to draw
 info_txt.Register(win.pointer);
-go_cue.Register(win.pointer);
+fix_cross.Register(win.pointer);
 
 % bailer
 KbName('UnifyKeyNames');

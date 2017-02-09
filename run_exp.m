@@ -59,10 +59,10 @@ try
             case 'feedback' % show feedback & wait
                 if enter_feedback
                     aud.Stop(1);
-                    go_cue.Set('color', [255, 30, 63]);
+                    fix_cross.Set('color', [255, 30, 63]);
                     if correct
                        aud.Play(2, 0);
-                       go_cue.Set('color', [97, 255, 77]);
+                       fix_cross.Set('color', [97, 255, 77]);
                     end
                 end
                 
@@ -70,7 +70,7 @@ try
 
                 if exit_feedback
                     aud.Stop(2);
-                    go_cue.Set('color', [255 255 255]);
+                    fix_cross.Set('color', [255 255 255]);
                     state = 'posttrial';
                 end
             case 'posttrial'
@@ -82,9 +82,9 @@ try
                     trial_count = trial_count + 1;
                     state = 'pretrial';
                 end
-            
-        end
-        go_cue.Draw();
+        end % end state machine
+
+        fix_cross.Draw();
         window_time = win.Flip(window_time + 0.8 * win.flip_interval);
         frame = frame + 1;
         % compare using this time for showing things
