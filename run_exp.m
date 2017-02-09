@@ -19,48 +19,76 @@ try
     trial_count = 1;
     state = 'pretrial';
 
+    window_time = win.Flip();
+    block_start = window_time;
+    kbrd.Start();
+    Priority(win.priority);
+
     % state machine
     while true
-        if trial_count > length(tgt.trial)
-            % end of experiment
-            break;
-        end
+        % check for end of experiment
+        if trial_count > length(tgt.trial), break; end
+
         % bail out by holding esc
         tmp = KbCheck();
-        if tmp
-            break;
-        end
+        if tmp, break; end
 
         % get the most recent presses/releases
         [~, presses] = kbrd.Check;
+
+        % draw constants
+        blank_imgs.Draw(1:2);
         % state machine
         switch state
-            case 'pretrial' % single-frame setup for trial
-                
-                state = 'intrial';
             case 'intrial' % dynamic bit
                 if enter_intrial
                     frame = 1;
-                    
+                    trial_start = aud.Play(1, window_time + win.flip_interval);
+                    image_frame_from_time = floor(dat.trial(trial_count).time_image/win.flip_interval);
+                end
+
+                if frame < image_frame_from_time
+                    img.Draw(dat.trial(trial_count).first_image);
+                else
+                    img.Draw(dat.trial(trial_count).second_image);
                 end
 
                 if exit_intrial
-             
+                    state = 'feedback';
                 end
             case 'feedback' % show feedback & wait
                 if enter_feedback
-
+                    aud.Stop(1);
+                    go_cue.Set('color', [255, 30, 63]);
+                    if correct
+                       aud.Play(2, 0);
+                       go_cue.Set('color', [97, 255, 77]);
+                    end
                 end
+                
+                img.Draw(dat.trial(trial_count).second_image);
 
                 if exit_feedback
-                    frame = 0;
-                    trial_count = trial_count + 1;
+                    aud.Stop(2);
+                    go_cue.Set('color', [255 255 255]);
+                    state = 'posttrial';
                 end
+            case 'posttrial'
+                if enter_posttrial
+                    wait_secs = GetSecs + 1 + rand(1);
+                end
+                
+                if exit_posttrial
+                    trial_count = trial_count + 1;
+                    state = 'pretrial';
+                end
+            
         end
-        
+        go_cue.Draw();
         window_time = win.Flip(window_time + 0.8 * win.flip_interval);
         frame = frame + 1;
         % compare using this time for showing things
+        frame_delta = window_time - approx_next_frame_time;
         approx_next_frame_time = window_time + win.flip_interval;
     end
 

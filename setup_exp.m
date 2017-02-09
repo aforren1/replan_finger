@@ -56,13 +56,14 @@ imgs = PobImage;
 img_dir = 'images/';
 img_names = dir('images/*.png');
 
+hand_offset = 0.15; % x displacement of hands rel to center
 for ii = 1:length(img_names)
     tmpimg = imcomplement(...
         imread([img_dir, img_names(ii).name])...
         );
-    rel_x_pos = 0.5 - 0.15;
+    rel_x_pos = 0.5 - hand_offset;
     if regexp(img_names(ii).name, ['\d']) > 5
-        rel_x_pos = 0.5 + 0.15;
+        rel_x_pos = 0.5 + hand_offset;
     end
 
     imgs.Add(ii, 'original_matrix', {tmpimg}, ...
@@ -79,9 +80,9 @@ for ii = 1:length(img_names)
     tmpimg = imcomplement(...
         imread([img_dir, img_names(ii).name])...
         );
-    rel_x_pos = 0.5 - 0.15;
+    rel_x_pos = 0.5 - hand_offset;
     if img_names(1).name(7) == 'r'
-        rel_x_pos = 0.5 + 0.15;
+        rel_x_pos = 0.5 + hand_offset;
     end
 
     blank_imgs.Add(ii, 'original_matrix', {tmpimg}, ...
@@ -127,5 +128,3 @@ RestrictKeysForKbCheck(KbName({'ESCAPE'}));
 %TODO: handle data storage
 
 % transition conditions
-
-enter_intrial = @() 
