@@ -117,7 +117,7 @@ try
             case 'posttrial'
                 if enter_posttrial
                     enter_posttrial = false;
-                    wait_frames = (0.5 + rand(1))/win.flip_interval;
+                    wait_frames = frame + (0.5 + rand(1))/win.flip_interval;
                 end
                 
                 if frame >= wait_frames
