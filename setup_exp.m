@@ -19,20 +19,15 @@ addpath(genpath('Psychoobox'));
 addpath(genpath('ptbutils'));
 tgt = readtable(input_dlg.fullfile);
 
-% break it up into segments
-split_str = regexp(file_name, '/', 'split');
-
-% return values of particular portions
-% use name as stand-in for id
-id = split_str{end - 1};
-tgt_name = split_str{end};
-
 % lop off extension
-tgt_name = regexprep(tgt_name, '.tgt', '');
+[~, tgt_name] = fileparts(input_dlg.file);
 
-data_dir = ['data/', id, '/'];
+data_dir = ['data/', input_dlg.id, '/'];
 % final file name (explicitly append .mat?)
-data_name = [data_dir, id, '_', tgt_name, '_', datestr(now, 'hhMMSS'), '.mat'];
+data_name = [data_dir, input_dlg.id, '_', tgt_name, '_', ...
+             'day', input_dlg.day, '_', ...
+             'block', input_dlg.block, '_', ...
+              datestr(now, 'hhMMSS'), '.mat'];
 
 %% Set up screen
 HideCursor;
