@@ -27,7 +27,7 @@ data_dir = ['data/', input_dlg.id, '/'];
 data_name = [data_dir, input_dlg.id, '_', tgt_name, '_', ...
              'day', input_dlg.day, '_', ...
              'block', input_dlg.block, '_', ...
-              datestr(now, 'hhMMSS'), '.mat'];
+              datestr(now, 'hhMMSS')];
 
 %% Set up screen
 HideCursor;
@@ -135,6 +135,6 @@ KbName('UnifyKeyNames');
 RestrictKeysForKbCheck(KbName({'ESCAPE'}));
 
 %TODO: handle data storage
-trial(1:length(tgt.prep))
+tgt.second_image_frame = last_frame - floor(tgt.preparation_time/win.flip_interval);
 
 % transition conditions
