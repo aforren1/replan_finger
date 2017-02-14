@@ -32,10 +32,10 @@ data_name = [data_dir, input_dlg.id, '_', tgt_name, '_', ...
 %% Set up screen
 HideCursor;
 Screen('Preference', 'Verbosity', 1);
-if fullscreen
+if input_dlg.fullscreen
     win_size = [];
 else
-    win_size = [50 50 500 500];
+    win_size = [50 50 800 700];
 end
 
 win = PobWindow('screen', max(Screen('screens')), ...
@@ -63,39 +63,39 @@ imgs = PobImage;
 img_dir = 'images/';
 img_names = dir('images/*.png');
 
-hand_offset = 0.15; % x displacement of hands rel to center
+hand_offset = 0.22; % x displacement of hands rel to center
+rel_x_scale = 0.25;
 for ii = 1:length(img_names)
     tmpimg = imcomplement(...
         imread([img_dir, img_names(ii).name])...
         );
     rel_x_pos = 0.5 - hand_offset;
-    if regexp(img_names(ii).name, ['\d']) > 5
+    if ii > 5
         rel_x_pos = 0.5 + hand_offset;
     end
 
     imgs.Add(ii, 'original_matrix', {tmpimg}, ...
              'rel_x_pos', rel_x_pos, ...
              'rel_y_pos', 0.5, ...
-             'rel_x_scale', 0.2, ...
+             'rel_x_scale', rel_x_scale, ...
              'rel_y_scale', nan);
 end
 
 blank_imgs = PobImage;
-img_dir = 'images/';
+img_dir = 'images/blank/';
 img_names = dir('images/blank/*.png');
 for ii = 1:length(img_names)
-    tmpimg = imcomplement(...
-        imread([img_dir, img_names(ii).name])...
-        );
+    tmpimg = imread([img_dir, img_names(ii).name]);
+    tmpimg = imcomplement(tmpimg);
     rel_x_pos = 0.5 - hand_offset;
-    if img_names(1).name(7) == 'r'
+    if ii == 2
         rel_x_pos = 0.5 + hand_offset;
     end
 
     blank_imgs.Add(ii, 'original_matrix', {tmpimg}, ...
              'rel_x_pos', rel_x_pos, ...
              'rel_y_pos', 0.5, ...
-             'rel_x_scale', 0.2, ...
+             'rel_x_scale', rel_x_scale, ...
              'rel_y_scale', nan);
 end
 
@@ -110,7 +110,7 @@ info_txt = PobText('value', helptext, 'size', 50, ...
                    'style', 'bold');
 
 % hardcoded indices at present, in the future parse unique(tgt.finger)?
-kbrd = BlamForceboard(1:10);
+%kbrd = BlamForceboard(1:10);
 
 fix_cross =  PobText('value', '+', 'size', 160, ...
                    'color', [255 255 255], ...
