@@ -1,11 +1,23 @@
-% pre-experiment boilerplate
+%% pre-experiment boilerplate
+
+% input dialog
+prompt = {'Subject id:', 'Day:', 'Block:', 'Trial table path:', 'Trial table name:', 'fullscreen:'};
+dlg_title = 'Experimentation Supination';
+num_lines = 1;
+load('defaults/defaultans.mat');
+defaultans = inputdlg(prompt, dlg_title, num_lines, defaultans);
+save('defaults/defaultans.mat', 'defaultans');
+
+% cast inputs to appropriate types
+input_dlg = cell2struct(defaultans, {'id', 'day', 'block', 'path', 'file', 'fullscreen'});
+input_dlg.fullscreen = str2num(input_dlg.fullscreen);
+input_dlg.fullfile = [input_dlg.path, input_dlg.file];
 
 Screen('Preference', 'SkipSyncTests', 1);
 Screen('Preference','VisualDebugLevel', 0);
 addpath(genpath('Psychoobox'));
 addpath(genpath('ptbutils'));
-tgt = ParseTgt(file_name, ',');
-tgt = struct2table(tgt); % R2013b ++!
+tgt = readtable(input_dlg.fullfile);
 
 % break it up into segments
 split_str = regexp(file_name, '/', 'split');

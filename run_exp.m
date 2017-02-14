@@ -1,4 +1,4 @@
-function dat = run_exp(file_name, fullscreen)
+function dat = run_exp()
 
 try
     setup_exp;
