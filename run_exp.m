@@ -18,6 +18,9 @@ try
     % set various flags
     trial_count = 1;
     state = 'pretrial';
+    enter_intrial = true;
+    enter_feedback = true;
+    enter_posttrial = true;
 
     window_time = win.Flip();
     block_start = window_time;
@@ -27,7 +30,7 @@ try
     % state machine
     while true
         % check for end of experiment
-        if trial_count > length(tgt.trial), break; end
+        if trial_count > length(tgt.preparation_time), break; end
 
         % bail out by holding esc
         tmp = KbCheck();
@@ -44,20 +47,25 @@ try
                 if enter_intrial
                     frame = 1;
                     trial_start = aud.Play(1, window_time + win.flip_interval);
-                    image_frame_from_time = floor(dat.trial(trial_count).time_image/win.flip_interval);
+                    image_frame_from_time = floor(tgt.preparation_time(trial_count)/win.flip_interval);
+                    image_frame_from_time = last_frame - image_frame_from_time;
+                    enter_intrial = false;
                 end
 
                 if frame < image_frame_from_time
-                    img.Draw(dat.trial(trial_count).first_image);
+                    img.Draw(tgt.first_image(trial_count));
                 else
-                    img.Draw(dat.trial(trial_count).second_image);
+                    img.Draw(tgt.second_image(trial_count));
                 end
 
-                if exit_intrial
+                % overshoot 'last frame' by a little for breathing room
+                if frame >= (last_frame + 30)
+                    enter_intrial = true;
                     state = 'feedback';
                 end
             case 'feedback' % show feedback & wait
                 if enter_feedback
+                    enter_feedback = false;
                     aud.Stop(1);
                     fix_cross.Set('color', [255, 30, 63]);
                     if correct
@@ -66,19 +74,22 @@ try
                     end
                 end
                 
-                img.Draw(dat.trial(trial_count).second_image);
+                img.Draw(tgt.second_image(trial_count));
 
                 if exit_feedback
                     aud.Stop(2);
                     fix_cross.Set('color', [255 255 255]);
                     state = 'posttrial';
+                    enter_feedback = true;
                 end
             case 'posttrial'
                 if enter_posttrial
+                    enter_posttrial = false;
                     wait_secs = GetSecs + 1 + rand(1);
                 end
                 
-                if exit_posttrial
+                if GetSecs >= wait_secs
+                    enter_posttrial = true;
                     trial_count = trial_count + 1;
                     state = 'pretrial';
                 end

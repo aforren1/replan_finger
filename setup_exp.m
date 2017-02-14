@@ -46,6 +46,8 @@ win = PobWindow('screen', max(Screen('screens')), ...
 aud = PobAudio;
 snd0 = GenClick(1046, 1/2, 3);
 last_beep = (length(snd0) - 0.02 * 44100)/44100;
+% last frame of a trial
+last_frame = floor(last_beep/win.flip_interval);
 snd1 = audioread('audio/smw_coin.wav');
 aud.Add('slave', 1);
 aud.Add('slave', 2);
@@ -133,5 +135,6 @@ KbName('UnifyKeyNames');
 RestrictKeysForKbCheck(KbName({'ESCAPE'}));
 
 %TODO: handle data storage
+trial(1:length(tgt.prep))
 
 % transition conditions
