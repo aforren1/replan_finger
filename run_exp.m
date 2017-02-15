@@ -22,6 +22,9 @@ try
     save_img_time = true;
     enter_feedback = true;
     enter_posttrial = true;
+    both_right = 0;
+    draw_slow = false;
+    draw_fast = false;
 
     window_time = win.Flip();
     block_start = window_time;
@@ -98,10 +101,22 @@ try
                     % correctness feedback
                     fix_cross.Set('color', [255, 30, 63]);
                     if tgt.correct(trial_count)
-                       aud.Play(2, 0);
-                       fix_cross.Set('color', [97, 255, 77]);
+                        both_right = 1;
+                        fix_cross.Set('color', [97, 255, 77]);
+                    end
+                    % timing feedback
+                    if tgt.diff_last_beep(trial_count) > 0.1
+                        draw_slow = true;
+                    elseif tgt.diff_last_beep(trial_count) < -0.1
+                        draw_fast = true;
+                    else % good timing
+                        both_right = both_right + 1;
                     end
 
+                    if both_right == 2
+                        aud.Play(2, 0);
+                    end
+                    both_right = 0;
                     % figure out how long to wait for feedback
                     end_feedback_frame = frame + 30;
                 end
@@ -109,6 +124,8 @@ try
                 img.Draw(tgt.second_image(trial_count));
 
                 if frame >= end_feedback_frame
+                    draw_slow = false;
+                    draw_fast = false;
                     aud.Stop(2);
                     fix_cross.Set('color', [255 255 255]);
                     state = 'posttrial';
@@ -128,6 +145,11 @@ try
         end % end state machine
 
         fix_cross.Draw();
+        if draw_slow
+            too_slow.Draw();
+        elseif draw_fast
+            too_fast.Draw();
+        end
         window_time = win.Flip(window_time + 0.8 * win.flip_interval);
         frame = frame + 1;
         % compare using this time for showing things
