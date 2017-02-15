@@ -33,9 +33,9 @@ try
         % check for end of experiment
         if trial_count > length(tgt.preparation_time), break; end
 
-        % bail out by holding esc
-        tmp = KbCheck();
-        if tmp, break; end
+        % bail out by clicking mouse
+        [~, ~, tmp] = GetMouse;
+        if any(tmp), break; end
 
         % get the most recent presses/releases
         [~, presses] = kbrd.Check;
@@ -133,6 +133,9 @@ try
         % compare using this time for showing things
         frame_delta = window_time - approx_next_frame_time;
         approx_next_frame_time = window_time + win.flip_interval;
+
+        % for whatever reason, daq doesn't work properly w/o short pause
+        pause(1e-5);
     end
 
     % cleanup
