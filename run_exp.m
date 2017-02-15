@@ -17,7 +17,7 @@ try
 
     % set various flags
     trial_count = 1;
-    state = 'pretrial';
+    state = 'intrial';
     enter_intrial = true;
     save_img_time = true;
     enter_feedback = true;
@@ -25,6 +25,7 @@ try
     both_right = 0;
     draw_slow = false;
     draw_fast = false;
+    frame = 0;
 
     window_time = win.Flip();
     block_start = window_time;
@@ -57,13 +58,13 @@ try
                 end
 
                 if frame < tgt.second_image_frame(trial_count)
-                    img.Draw(tgt.first_image(trial_count));
+                    imgs.Draw(tgt.first_image(trial_count));
                 else
                     if save_img_time
                         save_img_time = false;
                         tgt.second_image_sanity(trial_count) = window_time + win.flip_interval - trial_start;
                     end
-                    img.Draw(tgt.second_image(trial_count));
+                    imgs.Draw(tgt.second_image(trial_count));
                 end
 
                 % overshoot 'last frame' by a little for breathing room
@@ -80,14 +81,14 @@ try
                     % find what was pressed and when
                     [first_press, time_first_press, post_data, max_force, time_max_force] = kbrd.CheckMid();
                     tgt.first_press(trial_count) = first_press;
-                    tgt.correct = first_press == tgt.second_image(trial_count);
+                    tgt.correct(trial_count) = first_press == tgt.second_image(trial_count);
                     tgt.time_first_press(trial_count) = time_first_press - trial_start;
                     tgt.real_prep_time(trial_count) = tgt.time_first_press(trial_count) - ...
                                                       tgt.second_image_sanity(trial_count);
                     tgt.max_force(trial_count) = max_force;
                     tgt.time_max_force(trial_count) = time_max_force;
                     post_data(:, 1) = post_data(:, 1) - trial_start;
-                    tgt.post_data(trial_count) = post_data;
+%                    tgt.post_data(trial_count) = post_data;
                     tgt.diff_last_beep(trial_count) = tgt.time_first_press(trial_count) - last_beep;
                     
                     % debug chunk
@@ -121,7 +122,7 @@ try
                     end_feedback_frame = frame + 30;
                 end
                 
-                img.Draw(tgt.second_image(trial_count));
+                imgs.Draw(tgt.second_image(trial_count));
 
                 if frame >= end_feedback_frame
                     draw_slow = false;
@@ -140,7 +141,7 @@ try
                 if frame >= wait_frames
                     enter_posttrial = true;
                     trial_count = trial_count + 1;
-                    state = 'pretrial';
+                    state = 'intrial';
                 end
         end % end state machine
 
@@ -153,8 +154,8 @@ try
         window_time = win.Flip(window_time + 0.8 * win.flip_interval);
         frame = frame + 1;
         % compare using this time for showing things
-        frame_delta = window_time - approx_next_frame_time;
         approx_next_frame_time = window_time + win.flip_interval;
+        frame_delta = window_time - approx_next_frame_time;
 
         % for whatever reason, daq doesn't work properly w/o short pause
         pause(1e-5);
@@ -174,8 +175,8 @@ try
     end
     save([data_name, '.mat'], 'tgt');
     less_tgt = tgt;
-    less_tgt(:, {'post_data'}) = [];
-    writetable(less_tgt, [data_name, '.csv']);
+    %less_tgt(:, {'post_data'}) = [];
+    %writetable(less_tgt, [data_name, '.csv']);
 
 % bail out gracefully
 catch err 
