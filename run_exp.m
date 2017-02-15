@@ -80,6 +80,7 @@ try
 
                     % find what was pressed and when
                     [first_press, time_first_press, post_data, max_force, time_max_force] = kbrd.CheckMid();
+                    disp(first_press);
                     tgt.first_press(trial_count) = first_press;
                     tgt.correct(trial_count) = first_press == tgt.second_image(trial_count);
                     tgt.time_first_press(trial_count) = time_first_press - trial_start;
@@ -88,7 +89,7 @@ try
                     tgt.max_force(trial_count) = max_force;
                     tgt.time_max_force(trial_count) = time_max_force;
                     post_data(:, 1) = post_data(:, 1) - trial_start;
-%                    tgt.post_data(trial_count) = post_data;
+                    tgt.post_data(trial_count) = {post_data};
                     tgt.diff_last_beep(trial_count) = tgt.time_first_press(trial_count) - last_beep;
                     
                     % debug chunk
