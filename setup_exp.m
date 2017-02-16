@@ -1,7 +1,7 @@
 %% pre-experiment boilerplate
 
 % input dialog
-prompt = {'Subject id:', 'Day:', 'Block:', 'Trial table path:', 'Trial table name:', 'fullscreen:'};
+prompt = {'Subject id:', 'Day:', 'Block:', 'Trial table path:', 'Trial table name:', 'fullscreen:', 'transducers:'};
 dlg_title = 'Experimentation Supination';
 num_lines = 1;
 load('defaults/defaultans.mat');
@@ -9,8 +9,9 @@ defaultans = inputdlg(prompt, dlg_title, num_lines, defaultans);
 save('defaults/defaultans.mat', 'defaultans');
 
 % cast inputs to appropriate types
-input_dlg = cell2struct(defaultans, {'id', 'day', 'block', 'path', 'file', 'fullscreen'});
+input_dlg = cell2struct(defaultans, {'id', 'day', 'block', 'path', 'file', 'fullscreen', 'transducers'});
 input_dlg.fullscreen = str2num(input_dlg.fullscreen);
+input_dlg.transducers = str2num(input_dlg.transducers);
 input_dlg.fullfile = [input_dlg.path, input_dlg.file];
 
 Screen('Preference', 'SkipSyncTests', 1);
@@ -123,13 +124,25 @@ too_slow = PobText('value', 'Too late', 'size', 50, ...
                    'style', 'bold');
 
 % hardcoded indices at present, in the future parse unique(tgt.finger)?
-kbrd = BlamForceboard(1:10);
+if input_dlg.transducers
+    kbrd = BlamForceboard(1:10);
+else
+    kbrd = BlamKeyboard(1:10);
+end
 
 fix_cross =  PobText('value', '+', 'size', 160, ...
                    'color', [255 255 255], ...
                    'rel_x_pos', 0.5, ...
                    'rel_y_pos', 0.5, ...
                    'style', 'bold');
+
+% visual feedback
+press_feedback = PobRectangle();
+press_feedback.Add(1, 'rel_x_pos', 0.5, ...
+                   'rel_y_pos', 0.8, ...
+                   'rel_x_scale', 0.4, ...
+                   'rel_y_scale', 0.1, ...
+                   'fill_color', [200, 200, 200]); %'on' = [100 100 100]
 
 %% Register relative to window
 imgs.Register(win.pointer);
@@ -142,6 +155,8 @@ info_txt.Register(win.pointer);
 too_slow.Register(win.pointer);
 too_fast.Register(win.pointer);
 fix_cross.Register(win.pointer);
+press_feedback.Register(win.pointer);
+press_feedback.Prime();
 
 %TODO: handle data storage
 tgt.second_image_frame = last_frame - floor(tgt.preparation_time/win.flip_interval);

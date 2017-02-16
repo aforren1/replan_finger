@@ -42,7 +42,15 @@ try
         if any(tmp), break; end
 
         % get the most recent presses/releases
-        [~, presses] = kbrd.Check;
+        [~, presses, ~, releases] = kbrd.Check;
+        if ~isnan(presses)
+            press_feedback.Set(1, 'fill_color', [100 100 100]);
+        end
+        if ~isnan(releases)
+            press_feedback.Set(1, 'fill_color', [200 200 200]);
+        end
+        press_feedback.Prime();
+        press_feedback.Draw(1);
 
         % draw constants
         blank_imgs.Draw(1:2);
@@ -51,6 +59,7 @@ try
             case 'intrial' % dynamic bit
                 if enter_intrial
                     frame = 1;
+                    kbrd.CheckMid; % dump any in-between presses
                     trial_start = aud.Play(1, window_time + win.flip_interval);
                     image_frame_from_time = floor(tgt.preparation_time(trial_count)/win.flip_interval);
                     image_frame_from_time = last_frame - image_frame_from_time;
@@ -61,8 +70,10 @@ try
                     imgs.Draw(tgt.first_image(trial_count));
                 else
                     if save_img_time
+                        disp(frame);
                         save_img_time = false;
                         tgt.second_image_sanity(trial_count) = window_time + win.flip_interval - trial_start;
+                        tgt.second_image_prep(trial_count) = last_beep - tgt.second_image_sanity(trial_count);
                     end
                     imgs.Draw(tgt.second_image(trial_count));
                 end
@@ -80,7 +91,6 @@ try
 
                     % find what was pressed and when
                     [first_press, time_first_press, post_data, max_force, time_max_force] = kbrd.CheckMid();
-                    disp(first_press);
                     tgt.first_press(trial_count) = first_press;
                     tgt.correct(trial_count) = first_press == tgt.second_image(trial_count);
                     tgt.time_first_press(trial_count) = time_first_press - trial_start;
@@ -88,8 +98,8 @@ try
                                                       tgt.second_image_sanity(trial_count);
                     tgt.max_force(trial_count) = max_force;
                     tgt.time_max_force(trial_count) = time_max_force;
-                    post_data(:, 1) = post_data(:, 1) - trial_start;
-                    tgt.post_data(trial_count) = {post_data};
+                 %   post_data(:, 1) = post_data(:, 1) - trial_start;
+                %    tgt.post_data(trial_count) = {post_data};
                     tgt.diff_last_beep(trial_count) = tgt.time_first_press(trial_count) - last_beep;
                     
                     % debug chunk
@@ -136,10 +146,13 @@ try
             case 'posttrial'
                 if enter_posttrial
                     enter_posttrial = false;
-                    wait_frames = frame + (0.5 + rand(1))/win.flip_interval;
+                    wait_frames = frame + (0.3 + rand(1))/win.flip_interval;
                 end
                 
-                if frame >= wait_frames
+                % wait until at least one press
+                if frame >= wait_frames && ...
+                   ((any(isnan(first_press)) && ~any(isnan(presses))) ...
+                     || (~any(isnan(first_press))))
                     enter_posttrial = true;
                     trial_count = trial_count + 1;
                     state = 'intrial';
@@ -176,6 +189,7 @@ try
     end
     save([data_name, '.mat'], 'tgt');
     less_tgt = tgt;
+    dat = tgt;
     %less_tgt(:, {'post_data'}) = [];
     %writetable(less_tgt, [data_name, '.csv']);
 
