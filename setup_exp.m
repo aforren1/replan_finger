@@ -163,4 +163,5 @@ tgt.second_image_frame = last_frame - floor(tgt.preparation_time/win.flip_interv
 tgt.id(1:height(tgt), 1) = string(input_dlg.id);
 tgt.day(1:height(tgt), 1) = string(input_dlg.day);
 tgt.block(1:height(tgt), 1) = string(input_dlg.block);
+tgt.trial(:, 1) = 1:height(tgt);
 % transition conditions

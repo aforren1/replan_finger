@@ -62,26 +62,22 @@ try
                     frame = 1;
                     kbrd.CheckMid; % dump any in-between presses
                     trial_start = aud.Play(1, window_time + win.flip_interval);
-                    image_frame_from_time = floor(tgt.preparation_time(trial_count)/win.flip_interval);
-                    image_frame_from_time = last_frame - image_frame_from_time;
                     enter_intrial = false;
                 end
 
-                if frame < tgt.second_image_frame(trial_count)
+                if frame < tgt.second_image_frame(trial_count) %|| (GetSecs - trial_start + .0166 < )
                     imgs.Draw(tgt.first_image(trial_count));
+                elseif frame == tgt.second_image_frame(trial_count)
+                    save_img_time = true;
+                    imgs.Draw(tgt.second_image(trial_count));
                 else
-                    if save_img_time
-                        save_img_time = false;
-                        tgt.second_image_sanity(trial_count) = window_time + win.flip_interval - trial_start;
-                        tgt.second_image_prep(trial_count) = last_beep - tgt.second_image_sanity(trial_count);
-                    end
                     imgs.Draw(tgt.second_image(trial_count));
                 end
 
                 % overshoot 'last frame' by a little for breathing room
                 if frame >= (last_frame + 20)
                     enter_intrial = true;
-                    save_img_time = true;
+                    save_img_time = false;
                     state = 'feedback';
                 end
             case 'feedback' % show feedback & wait
@@ -169,6 +165,13 @@ try
             too_fast.Draw();
         end
         window_time = win.Flip(window_time + 0.6 * win.flip_interval);
+
+        if save_img_time && strcmp(state, 'intrial')
+            save_img_time = false;
+            tgt.second_image_sanity(trial_count) = window_time - trial_start;
+            tgt.second_image_prep(trial_count) = last_beep - tgt.second_image_sanity(trial_count);
+        end
+
         frame = frame + 1;
         % compare using this time for showing things
         frame_time(fdc) = window_time - block_start;
@@ -186,6 +189,10 @@ try
     aud.Close();
     kbrd.Stop();
     kbrd.Close();
+
+    % correct preparation time for identical image
+    tgt(tgt.first_image == tgt.second_image,:).real_prep_time = tgt(tgt.first_image == tgt.second_image,:).time_first_press;
+    
     if ~exist(data_dir, 'dir')
         mkdir(data_dir);
     end
@@ -193,8 +200,9 @@ try
     less_tgt = tgt;
     dat = tgt;
     less_tgt(:, {'post_data', 'max_force', 'time_max_force', 'post_data', 'trial_start', 'last_beep',...
-                 'last_beep_frame', 'diff_last_beep', 'block_start'}) = [];%, 'second_image_sanity', ...
-                % 'second_image_frame'}) = [];
+                 'last_beep_frame', 'diff_last_beep', 'block_start', 'second_image_sanity', ...
+                 'second_image_frame', 'preparation_time', 'second_image_prep', ...
+                 'time_first_press'}) = [];
     writetable(less_tgt, [data_name, '.csv']);
 
 % bail out gracefully
