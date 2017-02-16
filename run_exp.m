@@ -1,4 +1,4 @@
-function dat = run_exp()
+function [dat, frame_time] = run_exp()
 
 try
     setup_exp;
@@ -26,6 +26,7 @@ try
     draw_slow = false;
     draw_fast = false;
     frame = 0;
+    fdc = 1;
 
     window_time = win.Flip();
     block_start = window_time;
@@ -99,7 +100,10 @@ try
                     tgt.max_force(trial_count) = max_force;
                     tgt.time_max_force(trial_count) = time_max_force;
                  %   post_data(:, 1) = post_data(:, 1) - trial_start;
-                %    tgt.post_data(trial_count) = {post_data};
+                    tgt.post_data(trial_count) = {post_data};
+                    tgt.trial_start(trial_count) = trial_start;
+                    tgt.last_beep(trial_count) = last_beep;
+                    tgt.last_beep_frame(trial_count) = last_frame;
                     tgt.diff_last_beep(trial_count) = tgt.time_first_press(trial_count) - last_beep;
                     
                     % debug chunk
@@ -168,9 +172,8 @@ try
         window_time = win.Flip(window_time + 0.8 * win.flip_interval);
         frame = frame + 1;
         % compare using this time for showing things
-        approx_next_frame_time = window_time + win.flip_interval;
-        frame_delta = window_time - approx_next_frame_time;
-
+        frame_time(fdc) = window_time - block_start;
+        fdc = fdc + 1;
         % for whatever reason, daq doesn't work properly w/o short pause
         pause(1e-5);
     end
