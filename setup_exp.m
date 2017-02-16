@@ -160,5 +160,7 @@ press_feedback.Prime();
 
 %TODO: handle data storage
 tgt.second_image_frame = last_frame - floor(tgt.preparation_time/win.flip_interval);
-
+tgt.id(1:height(tgt), 1) = string(input_dlg.id);
+tgt.day(1:height(tgt), 1) = string(input_dlg.day);
+tgt.block(1:height(tgt), 1) = string(input_dlg.block);
 % transition conditions

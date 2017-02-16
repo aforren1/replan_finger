@@ -71,7 +71,6 @@ try
                     imgs.Draw(tgt.first_image(trial_count));
                 else
                     if save_img_time
-                        disp(frame);
                         save_img_time = false;
                         tgt.second_image_sanity(trial_count) = window_time + win.flip_interval - trial_start;
                         tgt.second_image_prep(trial_count) = last_beep - tgt.second_image_sanity(trial_count);
@@ -80,7 +79,7 @@ try
                 end
 
                 % overshoot 'last frame' by a little for breathing room
-                if frame >= (last_frame + 30)
+                if frame >= (last_frame + 20)
                     enter_intrial = true;
                     save_img_time = true;
                     state = 'feedback';
@@ -105,7 +104,7 @@ try
                     tgt.last_beep(trial_count) = last_beep;
                     tgt.last_beep_frame(trial_count) = last_frame;
                     tgt.diff_last_beep(trial_count) = tgt.time_first_press(trial_count) - last_beep;
-                    
+                    tgt.block_start(trial_count) = block_start;
                     % debug chunk
                     disp(['First press: ', num2str(first_press)]);
                     disp(['Image index: ', num2str(tgt.second_image(trial_count))])
@@ -169,7 +168,7 @@ try
         elseif draw_fast
             too_fast.Draw();
         end
-        window_time = win.Flip(window_time + 0.8 * win.flip_interval);
+        window_time = win.Flip(window_time + 0.6 * win.flip_interval);
         frame = frame + 1;
         % compare using this time for showing things
         frame_time(fdc) = window_time - block_start;
@@ -193,8 +192,10 @@ try
     save([data_name, '.mat'], 'tgt');
     less_tgt = tgt;
     dat = tgt;
-    %less_tgt(:, {'post_data'}) = [];
-    %writetable(less_tgt, [data_name, '.csv']);
+    less_tgt(:, {'post_data', 'max_force', 'time_max_force', 'post_data', 'trial_start', 'last_beep',...
+                 'last_beep_frame', 'diff_last_beep', 'block_start'}) = [];%, 'second_image_sanity', ...
+                % 'second_image_frame'}) = [];
+    writetable(less_tgt, [data_name, '.csv']);
 
 % bail out gracefully
 catch err 
