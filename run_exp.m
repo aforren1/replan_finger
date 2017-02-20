@@ -45,13 +45,12 @@ try
         % get the most recent presses/releases
         [~, presses, ~, releases] = kbrd.Check;
         if ~isnan(presses)
-            press_feedback.Set(1, 'fill_color', [100 100 100]);
+            press_feedback.Set('color', [100 100 100]);
         end
         if ~isnan(releases)
-            press_feedback.Set(1, 'fill_color', [200 200 200]);
+            press_feedback.Set('color', [200 200 200]);
         end
-        press_feedback.Prime();
-        press_feedback.Draw(1);
+        press_feedback.Draw();
 
         % draw constants
         blank_imgs.Draw(1:2);
@@ -65,7 +64,9 @@ try
                     enter_intrial = false;
                 end
 
-                if frame < tgt.second_image_frame(trial_count) %|| (GetSecs - trial_start + .0166 < )
+                if frame < 30
+                    % block drawing until first beep
+                elseif frame < tgt.second_image_frame(trial_count)
                     imgs.Draw(tgt.first_image(trial_count));
                 elseif frame == tgt.second_image_frame(trial_count)
                     save_img_time = true;
