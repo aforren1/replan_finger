@@ -44,10 +44,11 @@ try
 
         % get the most recent presses/releases
         [~, presses, ~, releases] = kbrd.Check;
-        if ~isnan(presses)
+        if any(~isnan(presses))
+            disp('evaled press')
             press_feedback.Set('color', [100 100 100]);
         end
-        if ~isnan(releases)
+        if any(~isnan(releases)) 
             press_feedback.Set('color', [200 200 200]);
         end
         press_feedback.Draw();
