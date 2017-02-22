@@ -10,7 +10,7 @@ function tbl = mk_tfiles(out_path, name, varargin)
 %     ind_finger - indices to use (1 to 10)
 %     repeats - Number of times to repeat each ind_finger (default 5)
 %     min_prep_time - Minimal preparation time (default 0.05 seconds)
-%     max_prep_time - Max preparation time (default 0.9 seconds)
+%     max_prep_time - Max preparation time (default 0.5 seconds)
 %     transition_prob - proportion of replan trials (default .3)
 %     seed - seed for random number generator (default 1)
 %
@@ -24,10 +24,10 @@ function tbl = mk_tfiles(out_path, name, varargin)
     p = inputParser;
     addRequired(p, 'out_path', @isstr);
     addRequired(p, 'name', @isstr);
-    addParameter(p, 'repeats', 5, @isnumeric);
+    addParameter(p, 'approx_trials', 100, @isnumeric);
     addParameter(p, 'ind_finger', [3, 5, 6, 8], @(x) ~any(x > 10 | x < 1));
     addParameter(p, 'min_prep_time', 0.05, @(x) isnumeric(x) & x > 0);
-    addParameter(p, 'max_prep_time', 0.9, @(x) isnumeric(x) & x > 0);
+    addParameter(p, 'max_prep_time', 0.5, @(x) isnumeric(x) & x > 0);
     addParameter(p, 'transition_prob', 0.3, @(x) x >= 0 & x <= 1);
     addParameter(p, 'seed', 1, @(x) rem(x, 1) == 0);
     parse(p, out_path, name, varargin{:});
@@ -35,31 +35,24 @@ function tbl = mk_tfiles(out_path, name, varargin)
     res = p.Results;
     
     rng(res.seed);
-    pairs = repmat(res.ind_finger, 2, res.repeats);
-    n_elements = length(pairs);
-    frac_elements = ceil(n_elements * res.transition_prob);
+    same = transpose([res.ind_finger; res.ind_finger]);
+    if res.transition_prob > 0
+        same_rep = repmat(same, ceil(((1 - res.transition_prob)*res.approx_trials)/length(res.ind_finger)), 1);
 
-    % if there are swaps, try to generate new pairings
-    if frac_elements ~= 0
-        indices = randperm(n_elements, frac_elements);    
-        maxit = 1e6;
-        for ii = 1:maxit
-            % shuffle indices and try to get it so that 
-            % 
-            mod_indices = indices(randperm(length(indices)));
-            pairs(2, indices) = pairs(2, mod_indices);
-            if ~any(pairs(1, indices) - pairs(2, indices) == 0)
-                break
-            end
-        end
-        if ii == maxit
-            error('Max iterations exceeded.');
-        end
+        diff1 = nchoosek(res.ind_finger, 2);
+        diff2 = fliplr(diff1);
+        both_diff = [diff1; diff2];
+
+        diff_rep = repmat(both_diff, ceil((res.transition_prob*res.approx_trials)/length(both_diff)), 1);
+
+        pairs = [same_rep; diff_rep];
+    else
+        pairs = repmat(same, ceil(res.approx_trials/length(res.ind_finger)), 1);
     end
-
-    prep_times = res.min_prep_time + rand(n_elements, 1) * ...
+    shuffled_inds = randperm(length(pairs));
+    pairs = pairs(shuffled_inds, :);
+    prep_times = res.min_prep_time + rand(length(pairs), 1) * ...
                         (res.max_prep_time - res.min_prep_time);
-    pairs = pairs';
     tbl = table(prep_times, pairs(:, 1), pairs(:, 2),...
                 'VariableNames', {'preparation_time', 'first_image', 'second_image'});
     writetable(tbl, [out_path, name, '.csv']);
