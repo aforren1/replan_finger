@@ -36,7 +36,7 @@ function tbl = mk_tfiles(out_path, name, varargin)
     
     rng(res.seed);
     same = transpose([res.ind_finger; res.ind_finger]);
-    if res.transition_prob > 0
+    if res.transition_prob > 0 % any switches at all
         same_rep = repmat(same, ceil(((1 - res.transition_prob)*res.approx_trials)/length(res.ind_finger)), 1);
 
         diff1 = nchoosek(res.ind_finger, 2);
