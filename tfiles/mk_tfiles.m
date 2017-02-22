@@ -8,7 +8,7 @@ function tbl = mk_tfiles(out_path, name, varargin)
 % 
 % Optional args:
 %     ind_finger - indices to use (1 to 10)
-%     repeats - Number of times to repeat each ind_finger (default 5)
+%     approx_trials - Approximate number of trials (rounds up) (default 100)
 %     min_prep_time - Minimal preparation time (default 0.05 seconds)
 %     max_prep_time - Max preparation time (default 0.5 seconds)
 %     transition_prob - proportion of replan trials (default .3)
@@ -17,7 +17,7 @@ function tbl = mk_tfiles(out_path, name, varargin)
 % Example:
 %     tbl = mk_tfiles('tfiles/', 'testme', ...
 %                     'ind_finger', [3 5 6 8], ...
-%                     'repeats', 10, ...
+%                     'approx_trials', 100, ...
 %                     'transition_prob', 0.2, ...
 %                     'seed', 5);
 
