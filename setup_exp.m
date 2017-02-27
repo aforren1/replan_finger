@@ -28,7 +28,7 @@ data_dir = ['data/', input_dlg.id, '/'];
 data_name = [data_dir, input_dlg.id, '_', tgt_name, '_', ...
              'day', input_dlg.day, '_', ...
              'block', input_dlg.block, '_', ...
-              datestr(now, 'hhMMSS')];
+              datestr(now, 'hhMMSS')]; % this end chunk prevents overwriting existing data
 
 %% Set up screen
 HideCursor;
@@ -45,7 +45,7 @@ win = PobWindow('screen', max(Screen('screens')), ...
 
 %% Set up audio
 aud = PobAudio;
-snd0 = GenClick(1046, 1/2, 3);
+snd0 = GenClick(1046, 1/1.8, 4); % frequency of tone, frequency of repetition, number of beeps
 last_beep = (length(snd0) - 0.02 * 44100)/44100;
 % last frame of a trial
 last_frame = floor(last_beep/win.flip_interval);
@@ -155,7 +155,6 @@ too_fast.Register(win.pointer);
 fix_cross.Register(win.pointer);
 press_feedback.Register(win.pointer);
 
-%TODO: handle data storage
 tgt.second_image_frame = last_frame - floor(tgt.preparation_time/win.flip_interval);
 tgt.id(1:height(tgt), 1) = string(input_dlg.id);
 tgt.day(1:height(tgt), 1) = string(input_dlg.day);

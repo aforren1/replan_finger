@@ -45,7 +45,6 @@ try
         % get the most recent presses/releases
         [~, presses, ~, releases] = kbrd.Check;
         if any(~isnan(presses))
-            disp('evaled press')
             press_feedback.Set('color', [100 100 100]);
         end
         if any(~isnan(releases)) 
@@ -96,7 +95,6 @@ try
                                                       tgt.second_image_sanity(trial_count);
                     tgt.max_force(trial_count) = max_force;
                     tgt.time_max_force(trial_count) = time_max_force;
-                 %   post_data(:, 1) = post_data(:, 1) - trial_start;
                     tgt.post_data(trial_count) = {post_data};
                     tgt.trial_start(trial_count) = trial_start;
                     tgt.last_beep(trial_count) = last_beep;
@@ -104,12 +102,12 @@ try
                     tgt.diff_last_beep(trial_count) = tgt.time_first_press(trial_count) - last_beep;
                     tgt.block_start(trial_count) = block_start;
                     % debug chunk
-                    disp(['First press: ', num2str(first_press)]);
-                    disp(['Image index: ', num2str(tgt.second_image(trial_count))])
-                    disp(['Correct: ', num2str(tgt.correct(trial_count))]);
-                    disp(['Prep time: ', num2str(tgt.real_prep_time(trial_count))])
-                    disp(['Distance from last beep: ', ...
-                          num2str(tgt.diff_last_beep(trial_count))]);
+                    % disp(['First press: ', num2str(first_press)]);
+                    % disp(['Image index: ', num2str(tgt.second_image(trial_count))])
+                    % disp(['Correct: ', num2str(tgt.correct(trial_count))]);
+                    % disp(['Prep time: ', num2str(tgt.real_prep_time(trial_count))])
+                    % disp(['Distance from last beep: ', ...
+                    %       num2str(tgt.diff_last_beep(trial_count))]);
                     
                     % correctness feedback
                     fix_cross.Set('color', [255, 30, 63]);
@@ -195,17 +193,18 @@ try
     % correct preparation time for identical image
     tgt(tgt.first_image == tgt.second_image,:).real_prep_time = tgt(tgt.first_image == tgt.second_image,:).time_first_press;
     
+    % convert to struct
+    tgt = table2struct(tgt);
+    
     if ~exist(data_dir, 'dir')
         mkdir(data_dir);
     end
     save([data_name, '.mat'], 'tgt');
-    less_tgt = tgt;
     dat = tgt;
-    less_tgt(:, {'post_data', 'max_force', 'time_max_force', 'post_data', 'trial_start', 'last_beep',...
-                 'last_beep_frame', 'diff_last_beep', 'block_start', 'second_image_sanity', ...
-                 'second_image_frame', 'preparation_time', 'second_image_prep', ...
-                 'time_first_press'}) = [];
-    writetable(less_tgt, [data_name, '.csv']);
+    subset_names = {'id', 'day', 'block', 'trial', 'first_image', 'second_image', ...
+     'first_press', 'correct', 'real_prep_time'};
+
+    writetable(tgt(:, subset_names) , [data_name, '.csv']);
 
 % bail out gracefully
 catch err 
