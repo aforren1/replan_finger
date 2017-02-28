@@ -8,12 +8,12 @@
  - git (for installation)
 
 ## Installation:
- - git clone --recursive git://github.com/aforren1/replan_finger.git
+ - `git clone --recursive git://github.com/aforren1/replan_finger.git`
  - Alternatively,
      1. Download zip from https://github.com/aforren1/replan_finger and extract somewhere reasonable
      2. Download zips from https://github.com/aforren1/psychoobox and https://github.com/aforren1/ptbutils,
         and extract those to the folders of the same name in replan_finger.
-        
+
 ## Explanation of data files
 
 Starred elements (**) are included in the reduced dataset.
