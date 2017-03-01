@@ -1,4 +1,4 @@
-function [dat, frame_time] = run_exp()
+function [tgt, frame_time] = run_exp()
 
 try
     setup_exp;
@@ -192,19 +192,16 @@ try
 
     % correct preparation time for identical image
     tgt(tgt.first_image == tgt.second_image,:).real_prep_time = tgt(tgt.first_image == tgt.second_image,:).time_first_press;
-    
-    % convert to struct
-    tgt = table2struct(tgt);
-    
     if ~exist(data_dir, 'dir')
         mkdir(data_dir);
-    end
-    save([data_name, '.mat'], 'tgt');
-    dat = tgt;
+    end    
     subset_names = {'id', 'day', 'block', 'trial', 'first_image', 'second_image', ...
-     'first_press', 'correct', 'real_prep_time'};
+                    'first_press', 'correct', 'real_prep_time'};
 
     writetable(tgt(:, subset_names) , [data_name, '.csv']);
+    % convert to struct
+    tgt = table2struct(tgt);
+    save([data_name, '.mat'], 'tgt');
 
 % bail out gracefully
 catch err 
