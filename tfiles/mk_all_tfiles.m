@@ -1,3 +1,6 @@
+% generate all finger pairs
+all_comb = [1 3 8 10; 1 4 7 10; 1 5 6 10; 2 4 7 9; 2 5 6 9; 3 5 6 8];
+
 for i = 1:15
     mk_tfiles('tfiles/', ['block', num2str(i)], ...
             'ind_finger', [3 5 6 8], ...

@@ -26,8 +26,8 @@ function tbl = mk_tfiles(out_path, name, varargin)
     addRequired(p, 'name', @isstr);
     addParameter(p, 'approx_trials', 100, @isnumeric);
     addParameter(p, 'ind_finger', [3, 5, 6, 8], @(x) ~any(x > 10 | x < 1));
-    addParameter(p, 'min_prep_time', 0.05, @(x) isnumeric(x) & x > 0);
-    addParameter(p, 'max_prep_time', 0.5, @(x) isnumeric(x) & x > 0);
+    addParameter(p, 'min_prep_time', 0.15, @(x) isnumeric(x) & x > 0);
+    addParameter(p, 'max_prep_time', 0.55, @(x) isnumeric(x) & x > 0);
     addParameter(p, 'transition_prob', 0.3, @(x) x >= 0 & x <= 1);
     addParameter(p, 'seed', 1, @(x) rem(x, 1) == 0);
     parse(p, out_path, name, varargin{:});
