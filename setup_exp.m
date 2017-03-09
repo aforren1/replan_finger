@@ -161,7 +161,23 @@ fix_cross.Register(win.pointer);
 press_feedback.Register(win.pointer);
 
 tgt.second_image_frame = last_frame - floor(tgt.preparation_time/win.flip_interval);
-tgt.id(1:height(tgt), 1) = {input_dlg.id};
-tgt.day(1:height(tgt), 1) = {input_dlg.day};
-tgt.block(1:height(tgt), 1) = {input_dlg.block};
+tgt.id(:, 1) = {input_dlg.id};
+tgt.day(:, 1) = {input_dlg.day};
+tgt.block(:, 1) = {input_dlg.block};
 tgt.trial(:, 1) = 1:height(tgt);
+
+% force preallocation of rest
+tgt.first_press(:, 1) = nan;
+tgt.correct(:, 1) = nan;
+tgt.time_first_press(:, 1) = nan;
+tgt.real_prep_time(:, 1) =nan;
+tgt.max_force(:, 1) = nan;
+tgt.time_max_force(:, 1) = nan;
+tgt.post_data(:, 1) = {nan};
+tgt.trial_start(:, 1) = nan;
+tgt.last_beep(:, 1) = nan;
+tgt.last_beep_frame(:, 1) = nan;
+tgt.diff_last_beep(:, 1) = nan;
+tgt.block_start(:, 1) = nan;
+tgt.second_image_sanity(:, 1) = nan;
+tgt.second_image_prep(:, 1) = nan;
