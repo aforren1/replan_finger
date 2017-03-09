@@ -20,7 +20,8 @@ try
     if ~exist(data_dir, 'dir')
         mkdir(data_dir);
     end
-    save(data_name, 'dat');
+    tgt = table2struct(tgt);
+    save([data_name, '.mat'], 'tgt');
 catch
     disp('Data might not exist');
 end

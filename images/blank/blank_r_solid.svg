@@ -12,13 +12,13 @@
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    version="1.1"
    id="svg2"
-   width="500"
-   height="570"
-   viewBox="0 0 500 570"
+   width="455.56897"
+   height="528.06458"
+   viewBox="0 0 455.56897 528.06458"
    sodipodi:docname="blank_r_solid.svg"
-   inkscape:export-filename="C:\Users\aforrence\Documents\shared_docs\blam\replan_finger\images\circled\wide_blanks\blank_l_solid.png"
-   inkscape:export-xdpi="103.217"
-   inkscape:export-ydpi="103.217"
+   inkscape:export-filename="C:\Users\aforrence\Documents\shared_docs\blam\replan_finger\images\df.png"
+   inkscape:export-xdpi="60"
+   inkscape:export-ydpi="60"
    inkscape:version="0.92.0 r15299">
   <metadata
      id="metadata8">
@@ -28,12 +28,72 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title />
+        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
   <defs
-     id="defs6" />
+     id="defs6">
+    <filter
+       style="color-interpolation-filters:sRGB"
+       inkscape:label="Invert"
+       id="filter4705">
+      <feColorMatrix
+         values="0 0 -1 0 1 0 -1 0 0 1 -1 0 0 0 1 0.21 0.72 0.07 1 0 "
+         result="color2"
+         id="feColorMatrix4703" />
+    </filter>
+    <filter
+       style="color-interpolation-filters:sRGB;"
+       inkscape:label="Invert"
+       id="filter4709">
+      <feColorMatrix
+         values="0 0 -1 0 1 0 -1 0 0 1 -1 0 0 0 1 0.21 0.72 0.07 1 0 "
+         result="fbSourceGraphic"
+         id="feColorMatrix4707" />
+      <feColorMatrix
+         result="fbSourceGraphicAlpha"
+         in="fbSourceGraphic"
+         values="0 0 0 -1 0 0 0 0 -1 0 0 0 0 -1 0 0 0 0 1 0"
+         id="feColorMatrix4809" />
+      <feColorMatrix
+         id="feColorMatrix4811"
+         values="0 0 -1 0 1 0 -1 0 0 1 -1 0 0 0 1 0.21 0.72 0.07 1 0 "
+         result="fbSourceGraphic"
+         in="fbSourceGraphic" />
+      <feColorMatrix
+         result="fbSourceGraphicAlpha"
+         in="fbSourceGraphic"
+         values="0 0 0 -1 0 0 0 0 -1 0 0 0 0 -1 0 0 0 0 1 0"
+         id="feColorMatrix4813" />
+      <feColorMatrix
+         id="feColorMatrix4815"
+         values="0 0 -1 0 1 0 -1 0 0 1 -1 0 0 0 1 0.21 0.72 0.07 1 0 "
+         result="fbSourceGraphic"
+         in="fbSourceGraphic" />
+      <feColorMatrix
+         result="fbSourceGraphicAlpha"
+         in="fbSourceGraphic"
+         values="0 0 0 -1 0 0 0 0 -1 0 0 0 0 -1 0 0 0 0 1 0"
+         id="feColorMatrix4817" />
+      <feColorMatrix
+         id="feColorMatrix4819"
+         values="0 0 -1 0 1 0 -1 0 0 1 -1 0 0 0 1 0.21 0.72 0.07 1 0 "
+         result="color2"
+         in="fbSourceGraphic" />
+    </filter>
+    <clipPath
+       clipPathUnits="userSpaceOnUse"
+       id="clipPath4775">
+      <rect
+         style="opacity:1;fill:#000000;fill-opacity:0;fill-rule:evenodd;stroke:#000000;stroke-opacity:1;paint-order:markers fill stroke"
+         id="rect4777"
+         width="455.56897"
+         height="528.06458"
+         x="23.890598"
+         y="20.516256" />
+    </clipPath>
+  </defs>
   <sodipodi:namedview
      pagecolor="#ffffff"
      bordercolor="#666666"
@@ -48,28 +108,34 @@
      id="namedview4"
      showgrid="false"
      borderlayer="true"
-     inkscape:zoom="1.7166667"
-     inkscape:cx="200.21018"
-     inkscape:cy="278.16644"
+     inkscape:zoom="1.2138667"
+     inkscape:cx="-81.931726"
+     inkscape:cy="194.29154"
      inkscape:window-x="-9"
      inkscape:window-y="-9"
      inkscape:window-maximized="1"
-     inkscape:current-layer="svg2" />
+     inkscape:current-layer="svg2"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0" />
   <image
-     width="477.20389"
-     height="549.90289"
-     preserveAspectRatio="none"
-     style="image-rendering:optimizeQuality"
-     xlink:href="file:///C:/Users/aforrence/Documents/shared_docs/blam/replan_finger/images/blank/blank_l_solid.png"
-     id="image10"
-     x="11.398041"
+     sodipodi:absref="C:\Users\aforrence\Documents\shared_docs\blam\replan_finger\images\blank\blank_l_solid.png"
+     xlink:href="blank_l_solid.png"
+     transform="matrix(-1.0025269,0,0,1,480.70268,-20.516256)"
+     clip-path="url(#clipPath4775)"
      y="10.048553"
-     sodipodi:absref="C:\Users\aforrence\Documents\shared_docs\blam\replan_finger\images\blank\blank_l_solid.png" />
-  <ellipse
-     style="fill:#00ccff;fill-opacity:1;stroke:#000000;stroke-width:3.74158144;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:markers fill stroke"
-     id="path4487"
-     cx="-110.76406"
-     cy="173.28226"
-     rx="29.863188"
-     ry="28.612825" />
+     x="11.398041"
+     id="image10"
+     style="opacity:1;fill:none;fill-rule:evenodd;stroke:#000000;stroke-opacity:1;filter:url(#filter4709);image-rendering:optimizeQuality"
+     preserveAspectRatio="none"
+     height="549.90289"
+     width="477.20389" />
+  <circle
+     style="fill:#00c9ff;fill-opacity:0.99029122;stroke:#ffffff;stroke-width:3.86598921;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:markers fill stroke"
+     id="path4711"
+     cx="-38.017532"
+     cy="267.29623"
+     r="30.067005"
+     transform="scale(-1,1)" />
 </svg>

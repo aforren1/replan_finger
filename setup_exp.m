@@ -45,7 +45,7 @@ win = PobWindow('screen', max(Screen('screens')), ...
 
 %% Set up audio
 aud = PobAudio;
-snd0 = GenClick(1046, 1/1.8, 4); % frequency of tone, frequency of repetition, number of beeps
+snd0 = GenClick(1046, 1/2, 4); % frequency of tone, frequency of repetition, number of beeps
 last_beep = (length(snd0) - 0.02 * 44100)/44100;
 % last frame of a trial
 last_frame = floor(last_beep/win.flip_interval);
@@ -66,22 +66,24 @@ imgs = PobImage;
 img_dir = 'images/';
 img_names = dir('images/*.png');
 
-hand_offset = 0.22; % x displacement of hands rel to center
+hand_offset = 0.3; % x displacement of hands rel to center
 rel_x_scale = 0.25;
 for ii = 1:length(img_names)
-    tmpimg = imcomplement(...
-        imread([img_dir, img_names(ii).name])...
-        );
+    tmpimg = imread([img_dir, img_names(ii).name]);
+    %tmpimg = imcomplement(tmpimg);
     rel_x_pos = 0.5 - hand_offset;
+    rot_angle = 90;
     if ii > 5
         rel_x_pos = 0.5 + hand_offset;
+        rot_angle = 270;
     end
 
     imgs.Add(ii, 'original_matrix', {tmpimg}, ...
              'rel_x_pos', rel_x_pos, ...
              'rel_y_pos', 0.5, ...
              'rel_x_scale', rel_x_scale, ...
-             'rel_y_scale', nan);
+             'rel_y_scale', nan,...
+             'rotation_angle', rot_angle);
 end
 
 blank_imgs = PobImage;
@@ -89,17 +91,20 @@ img_dir = 'images/blank/';
 img_names = dir('images/blank/*.png');
 for ii = 1:length(img_names)
     tmpimg = imread([img_dir, img_names(ii).name]);
-    tmpimg = imcomplement(tmpimg);
+    %tmpimg = imcomplement(tmpimg);
     rel_x_pos = 0.5 - hand_offset;
+    rot_angle = 90;
     if ii == 2
         rel_x_pos = 0.5 + hand_offset;
+        rot_angle = 270;
     end
 
     blank_imgs.Add(ii, 'original_matrix', {tmpimg}, ...
              'rel_x_pos', rel_x_pos, ...
              'rel_y_pos', 0.5, ...
              'rel_x_scale', rel_x_scale, ...
-             'rel_y_scale', nan);
+             'rel_y_scale', nan, ...
+             'rotation_angle', rot_angle);
 end
 
 %% Set up text
