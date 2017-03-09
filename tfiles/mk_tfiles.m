@@ -55,6 +55,10 @@ function tbl = mk_tfiles(out_path, name, varargin)
                         (res.max_prep_time - res.min_prep_time);
     tbl = table(prep_times, pairs(:, 1), pairs(:, 2),...
                 'VariableNames', {'preparation_time', 'first_image', 'second_image'});
+    warmup = table(repmat(res.max_prep_time, length(res.ind_finger), 1),...
+                   res.ind_finger', res.ind_finger', ...
+                   'VariableNames', {'preparation_time', 'first_image', 'second_image'});
+    tbl = [warmup; tbl];
     writetable(tbl, [out_path, name, '.csv']);
 
 end
