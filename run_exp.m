@@ -99,7 +99,7 @@ try
                     tgt.trial_start(trial_count) = trial_start;
                     tgt.last_beep(trial_count) = last_beep;
                     tgt.last_beep_frame(trial_count) = last_frame;
-                    tgt.diff_last_beep(trial_count) = tgt.time_first_press(trial_count) - last_beep;
+                    tgt.diff_last_beep(trial_count) = time_max_force - last_beep; % try using max force for feedback
                     tgt.block_start(trial_count) = block_start;
                     % debug chunk
                     % disp(['First press: ', num2str(first_press)]);
