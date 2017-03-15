@@ -94,12 +94,12 @@ try
                     tgt.real_prep_time(trial_count) = tgt.time_first_press(trial_count) - ...
                                                       tgt.second_image_sanity(trial_count);
                     tgt.max_force(trial_count) = max_force;
-                    tgt.time_max_force(trial_count) = time_max_force;
+                    tgt.time_max_force(trial_count) = time_max_force - trial_start;
                     tgt.post_data(trial_count) = {post_data};
                     tgt.trial_start(trial_count) = trial_start;
                     tgt.last_beep(trial_count) = last_beep;
                     tgt.last_beep_frame(trial_count) = last_frame;
-                    tgt.diff_last_beep(trial_count) = time_max_force - last_beep; % try using max force for feedback
+                    tgt.diff_last_beep(trial_count) = time_max_force - last_beep - trial_start; % try using max force for feedback
                     tgt.block_start(trial_count) = block_start;
                     % debug chunk
                     % disp(['First press: ', num2str(first_press)]);
