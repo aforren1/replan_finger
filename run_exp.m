@@ -116,7 +116,7 @@ try
                         fix_cross.Set('color', [97, 255, 77]);
                     end
                     % timing feedback
-                    if tgt.diff_last_beep(trial_count) > 0.1 || isnan(tgt.diff_last_beep(trial_count)
+                    if tgt.diff_last_beep(trial_count) > 0.1 || isnan(tgt.diff_last_beep(trial_count))
                         draw_slow = true;
                     elseif tgt.diff_last_beep(trial_count) < -0.1
                         draw_fast = true;
