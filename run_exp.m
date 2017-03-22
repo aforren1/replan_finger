@@ -28,6 +28,7 @@ try
     frame = 0;
     fdc = 1;
 
+    frame_time = nan(30000, 1);
     window_time = win.Flip();
     block_start = window_time;
     kbrd.Start();
