@@ -45,7 +45,7 @@ win = PobWindow('screen', max(Screen('screens')), ...
 
 %% Set up audio
 aud = PobAudio;
-snd0 = GenClick(1046, 1/2, 4); % frequency of tone, frequency of repetition, number of beeps
+snd0 = GenClick([523.251, 659.255, 783.991, 1046.5], 1/2, 4); % frequency of tone, frequency of repetition, number of beeps
 last_beep = (length(snd0) - 0.02 * 44100)/44100;
 % last frame of a trial
 last_frame = floor(last_beep/win.flip_interval);
