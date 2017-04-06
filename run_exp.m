@@ -146,7 +146,7 @@ try
             case 'posttrial'
                 if enter_posttrial
                     enter_posttrial = false;
-                    wait_frames = frame + (0.3 + rand(1))/win.flip_interval;
+                    wait_frames = frame + floor(0.2/win.flip_interval);%(0.3 + rand(1))/win.flip_interval;
                 end
                 
                 % wait until at least one press
@@ -165,7 +165,7 @@ try
         elseif draw_fast
             too_fast.Draw();
         end
-        window_time = win.Flip(window_time + 0.6 * win.flip_interval);
+        window_time = win.Flip(window_time + 0.5 * win.flip_interval);
 
         if save_img_time && strcmp(state, 'intrial')
             save_img_time = false;

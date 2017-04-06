@@ -1,7 +1,7 @@
 library(data.table)
 library(ggplot2)
 
-window_size <- 0.05
+window_size <- 0.1
 
 slider <- function(x, y, window_size = 0.1) {
   out <- rep(NA, length(y))
@@ -13,7 +13,7 @@ slider <- function(x, y, window_size = 0.1) {
   out
 }
 
-wd <- paste0(getwd(), '/001')
+wd <- paste0(getwd(), '/bias_0')
 filenames <- list.files(path = wd, pattern = '*.csv$', recursive = TRUE, full.names= TRUE)
 filenames <- filenames[!grepl(filenames, pattern = '000')]
 
