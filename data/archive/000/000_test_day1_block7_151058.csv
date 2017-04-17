@@ -1,0 +1,6 @@
+id,day,block,trial,first_image,second_image,first_press,correct,real_prep_time
+000,1,7,1,6,6,5,0,0.493109785046272
+000,1,7,2,3,8,NaN,0,NaN
+000,1,7,3,3,8,NaN,0,NaN
+000,1,7,4,6,6,NaN,0,NaN
+000,1,7,5,8,8,NaN,0,NaN

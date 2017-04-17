@@ -13,7 +13,7 @@ slider <- function(x, y, window_size = 0.1) {
   out
 }
 
-wd <- paste0(getwd(), '/bias_0')
+wd <- paste0(getwd(), '/jcc')
 filenames <- list.files(path = wd, pattern = '*.csv$', recursive = TRUE, full.names= TRUE)
 filenames <- filenames[!grepl(filenames, pattern = '000')]
 
