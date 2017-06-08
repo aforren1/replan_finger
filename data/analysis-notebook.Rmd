@@ -1,12 +1,12 @@
 ---
 title: "Replanning"
 output:
-  html_notebook:
-    code_folding: hide
+  html_document:
     toc: yes
     fig_height: 8
     fig_width: 12
-  html_document:
+  html_notebook:
+    code_folding: hide
     toc: yes
     fig_height: 8
     fig_width: 12
@@ -187,5 +187,5 @@ ggplot(tmp_dat, aes(x = real_prep_time, y = value, colour = variable)) +
 ```{r}
 
 dat[,choice := ifelse(chose_old, 1, ifelse(chose_new, 2, ifelse(chose_null_old_hand, 3, 4)))]
-brm(choice ~ gp(real_prep_time, by = label), family = categorical(), data = dat, chains = 2)
+#m1 <- brm(correct ~ gp(real_prep_time, by = label), family = categorical(), data = dat, chains = 2)
 ```
