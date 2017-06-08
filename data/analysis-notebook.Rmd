@@ -90,6 +90,10 @@ ggplot(dat, aes(x = real_prep_time, y = slide_correct_id, colour = label)) +
 
 ```
 
+In these first two figures, the x-axis is the amount of time the subject had to prepare, the y-axis is the (smoothed) proportion of the time they got the correct answer, and the color refers to the type of switch (homologous, heterologous, same hand). The histogram in the background represents the (relative) amount of data collected, and gives us an idea of how well we sampled across preparation times. 
+
+The second figure is the same, except each facet is performance of a single subject.
+
 Coverage is pretty weak in our region of interest (~ 300ms), but one particularly interesting thing is that the homologous finger seems *slower* than the others (or more precisely, it takes longer to choose the correct action in that pair compared to the others). 
 
 Next, we can see the sorts of errors people were making when **not** going to the correct choice.
@@ -134,6 +138,7 @@ ggplot(tmp_dat, aes(x = real_prep_time, y = value, colour = variable)) +
 
 ```
 
+Here, the x-axis is the preparation time, the y-axis is the proportion of the time the subject made a particular choice, the colors represent those choices (more below), and the facets are for each switch type (homologous, heterologous, same hand).
 
 This plot takes a bit of interpretation.
 
@@ -156,13 +161,13 @@ ggplot(tmp_dat, aes(x = real_prep_time, y = value, colour = label)) +
   guides(colour = guide_legend(title = NULL))
 ```
 
+The interesting thing is that for some reason, people have difficulty switching to the homologous finger on the opposite side (green curve, top right). They stop going to the old "incorrect" action at the same time as the other conditions (top left), and even begin choosing the correct action at comparable latency/accuracy compared to the other conditions (top right, pre-300 ms). From about 300-400ms, subjects are not as likely to select the homologous finger. Instead, they seem to select the heterologous finger on the opposite side.  This likely isn't solely related to issues with the stimuli (related to figuring out *which* finger to push), as then we would expect the heterologous and homologous choice rates to match (bottom right).
 
-Few notes here:
+Thoughts:
 
- - The heterologous switch provides a nice control for the homologous condition. 
-     - Had there been any substantial issues tied to the stimulus presentation (and a null effect), you would expect the proportion in `slide_null_new_hand_group` to match between hetero- & homologous.
- - All groups stop choosing the old one at the same rate.
- 
+1. Why do subjects express this relatively late? I would've thought that any effect would be closer to 250ms/whenever they initially start expressing the correct action. Is this a cognitive effect?
+2. Does the magnitude of the effect make sense? (peeking below, it seems that some individuals are affected ~40% of the time, while others have a smaller effect)
+    - Why would people express the *correct* action relatively frequently (60-80% of the time)?
 
 
 To make sure it's not just one person driving the effect, let's see all individuals (probably sparse):
@@ -184,8 +189,16 @@ ggplot(tmp_dat, aes(x = real_prep_time, y = value, colour = variable)) +
  
  
 
-```{r}
+```{r wobbly-model}
 
 dat[,choice := ifelse(chose_old, 1, ifelse(chose_new, 2, ifelse(chose_null_old_hand, 3, 4)))]
-#m1 <- brm(correct ~ gp(real_prep_time, by = label), family = categorical(), data = dat, chains = 2)
+dat$label <- as.factor(dat$label)
+# m1 <- brm(choice ~ s(real_prep_time,by = label) + (1|id), 
+#           family = categorical(), 
+#           data = dat, 
+#           chains = 3, 
+#           cores = 3, 
+#           iter = 2000)
+
+
 ```
