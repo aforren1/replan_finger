@@ -1,0 +1,191 @@
+---
+title: "Replanning"
+output:
+  html_notebook:
+    code_folding: hide
+    toc: yes
+    fig_height: 8
+    fig_width: 12
+  html_document:
+    toc: yes
+    fig_height: 8
+    fig_width: 12
+editor_options:
+  chunk_output_type: inline
+---
+
+## Packages
+
+```{r global_options, include=FALSE}
+knitr::opts_chunk$set(warning = FALSE, message = FALSE)
+
+```
+
+```{r}
+library(data.table)
+library(ggplot2)
+library(ggthemes)
+theme_set(theme_minimal())
+
+slider <- function(x, y, window_size = 0.1) {
+  out <- rep(NA, length(y))
+  upper <- x + (window_size/2)
+  lower <- x - (window_size/2)
+  
+  for (nn in seq(1, length(y))) {
+    out[nn] <- mean(y[x <= upper[nn] & x >= lower[nn]], na.rm = TRUE)
+  }
+  out
+}
+```
+
+## Import/clean data
+
+```{r clean}
+dat <-  fread('extended_table.csv') # comes from matlab file write_extended_data.m
+dat <- dat[real_prep_time > 0]
+dat <- dat[first_image != second_image]
+dat <- dat[!is.nan(first_press)]
+dat[, 'first_hand' := ifelse(first_image > 5, 'right', 'left')]
+dat[, 'second_hand' := ifelse(second_image > 5, 'right', 'left')]
+
+fings <- c('pinky', 'ring', 'middle', 'index', 'thumb')
+fingers <- data.frame(first_image = 1:10, finger1 = c(fings, rev(fings)))
+dat <- merge(dat, fingers, by = 'first_image', sort = FALSE)
+names(fingers) <- c('second_image', 'finger2')
+dat <- merge(dat, fingers, by = 'second_image', sort = FALSE)
+
+dat[, 'label' := ifelse(first_hand == second_hand, 'same_hand',
+                        ifelse(finger1 == finger2, 'homologous', 'heterologous'))]
+names(dat)[16:17] <- c('first_finger', 'second_finger')
+```
+
+## Exploratory plots
+
+```{r correct_plot}
+dat[, 'slide_correct_group' := slider(real_prep_time, correct), by = c('label')]
+dat[, 'slide_correct_id' := slider(real_prep_time, correct), by = c('label', 'id')]
+
+ggplot(dat, aes(x = real_prep_time, y = slide_correct_group, colour = label)) +
+  geom_histogram(data = dat, aes(x = real_prep_time, y = ..density../10, colour = NULL),
+                 bins = 50, alpha = 0.6) +
+  geom_line(size = 1) + 
+  xlim(c(0, 0.75)) +
+  labs(x = 'Preparation Time (s)',
+       y = 'Proportion Correct',
+       title = 'Population-level correctness',
+       subtitle = 'Histograms represent observation counts.')
+
+ggplot(dat, aes(x = real_prep_time, y = slide_correct_id, colour = label)) +
+  geom_histogram(data = dat, aes(x = real_prep_time, y = ..density../10, colour = NULL),
+               bins = 50, alpha = 0.6) +
+  geom_line(size = 1) + 
+  xlim(c(0, 0.75)) +
+  labs(x = 'Preparation Time (s)',
+       y = 'Proportion Correct',
+       title = 'Individual correctness',
+       subtitle = 'Histograms represent observation counts.') +
+  facet_wrap(~id)
+
+
+```
+
+Coverage is pretty weak in our region of interest (~ 300ms), but one particularly interesting thing is that the homologous finger seems *slower* than the others (or more precisely, it takes longer to choose the correct action in that pair compared to the others). 
+
+Next, we can see the sorts of errors people were making when **not** going to the correct choice.
+
+```{r choice_slide_calc}
+# choice
+dat[, 'chose_old' := first_image == first_press]
+dat[, 'chose_new' := second_image == first_press]
+dat[, 'chose_null' := chose_old == chose_new] # chose neither old nor new (one of the other choices)
+dat[, 'hand_choice' := ifelse(first_press > 5, 'right', 'left')]
+dat[, 'chose_null_old_hand' := chose_null & (hand_choice == first_hand)]
+dat[, 'chose_null_new_hand' := chose_null & !chose_null_old_hand]
+
+dat[, 'slide_old_group' := slider(real_prep_time, chose_old), by = c('label')]
+dat[, 'slide_new_group' := slider(real_prep_time, chose_new), by = c('label')]
+dat[, 'slide_null_group' := slider(real_prep_time, chose_null), by = c('label')]
+dat[, 'slide_null_old_hand_group' := slider(real_prep_time, chose_null_old_hand), by = c('label')]
+dat[, 'slide_null_new_hand_group' := slider(real_prep_time, chose_null_new_hand), by = c('label')]
+
+dat[, 'slide_old_id' := slider(real_prep_time, chose_old), by = c('label', 'id')]
+dat[, 'slide_new_id' := slider(real_prep_time, chose_new), by = c('label', 'id')]
+dat[, 'slide_null_id' := slider(real_prep_time, chose_null), by = c('label', 'id')]
+dat[, 'slide_null_old_hand_id' := slider(real_prep_time, chose_null_old_hand), by = c('label', 'id')]
+dat[, 'slide_null_new_hand_id' := slider(real_prep_time, chose_null_new_hand), by = c('label', 'id')]
+
+```
+
+```{r choice_slide_plot, fig.width=12, fig.height=5}
+
+tmp_dat <- dat[, c(4, 11, 18, 27:28, 30:31)]
+tmp_dat <- melt(tmp_dat, id = c('id', 'label', 'real_prep_time'))
+
+ggplot(tmp_dat, aes(x = real_prep_time, y = value, colour = variable)) + 
+  geom_line(size = 1) + 
+  xlim(c(0, 0.75)) +
+  facet_wrap(~label) +
+  labs(x = 'Preparation Time (s)',
+       y = 'Proportion Choice',
+       title = 'Choice Proportions') +
+  theme(legend.position = "bottom") +
+  guides(colour = guide_legend(title = NULL))
+
+```
+
+
+This plot takes a bit of interpretation.
+
+ - `slide_old_group` is the proportion of the time they went to the original (now incorrect) response.
+ - `slide_new_group` is the proportion of the time they went to the new (now correct) response.
+ - `slide_null_old_hand_group` is the proportion of the time they did not go to either of the above, but went to a finger on the original hand. Example: fingers are [2 4 7 9]. Original was 2, switch was 7, but they went to 4.
+ - `slide_null_new_hand_group` is the proportion of the time that instead of going to the first three options, they went to a finger on the opposite hand. Example same as above, but instead went to 9.
+
+Here's the same thing, overlaid the other way:
+
+```{r}
+ggplot(tmp_dat, aes(x = real_prep_time, y = value, colour = label)) + 
+  geom_line(size = 1) + 
+  xlim(c(0, 0.75)) +
+  facet_wrap(~variable) +
+  labs(x = 'Preparation Time (s)',
+       y = 'Proportion Choice',
+       title = 'Choice Proportions') +
+  theme(legend.position = "bottom") +
+  guides(colour = guide_legend(title = NULL))
+```
+
+
+Few notes here:
+
+ - The heterologous switch provides a nice control for the homologous condition. 
+     - Had there been any substantial issues tied to the stimulus presentation (and a null effect), you would expect the proportion in `slide_null_new_hand_group` to match between hetero- & homologous.
+ - All groups stop choosing the old one at the same rate.
+ 
+
+
+To make sure it's not just one person driving the effect, let's see all individuals (probably sparse):
+
+```{r, fig.width=12, fig.height=20}
+tmp_dat <- dat[, c(4, 11, 18, 32:33, 35:36)]
+tmp_dat <- melt(tmp_dat, id = c('id', 'label', 'real_prep_time'))
+
+ggplot(tmp_dat, aes(x = real_prep_time, y = value, colour = variable)) + 
+  geom_line(size = 1) + 
+  xlim(c(0, 0.75)) +
+  facet_wrap(id~label, ncol = 3) +
+  labs(x = 'Preparation Time (s)',
+       y = 'Proportion Choice',
+       title = 'Choice Proportions (Individual)') +
+  theme(legend.position = "bottom") +
+  guides(colour = guide_legend(title = NULL))
+```
+ 
+ 
+
+```{r}
+
+dat[,choice := ifelse(chose_old, 1, ifelse(chose_new, 2, ifelse(chose_null_old_hand, 3, 4)))]
+brm(choice ~ gp(real_prep_time, by = label), family = categorical(), data = dat, chains = 2)
+```
