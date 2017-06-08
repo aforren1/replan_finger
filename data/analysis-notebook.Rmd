@@ -1,12 +1,12 @@
 ---
 title: "Replanning"
 output:
-  html_document:
+  html_notebook:
+    code_folding: hide
     toc: yes
     fig_height: 8
     fig_width: 12
-  html_notebook:
-    code_folding: hide
+  html_document:
     toc: yes
     fig_height: 8
     fig_width: 12
@@ -146,6 +146,15 @@ This plot takes a bit of interpretation.
  - `slide_new_group` is the proportion of the time they went to the new (now correct) response.
  - `slide_null_old_hand_group` is the proportion of the time they did not go to either of the above, but went to a finger on the original hand. Example: fingers are [2 4 7 9]. Original was 2, switch was 7, but they went to 4.
  - `slide_null_new_hand_group` is the proportion of the time that instead of going to the first three options, they went to a finger on the opposite hand. Example same as above, but instead went to 9.
+
+Table for (hopefully more) clarity:
+
+Color | Heterologous | Homologous | same_hand
+------|--------------|------------|----------
+Red   | old finger   | old finger | old finger
+Green | heterologous | homologous | same hand
+Purple| homologous   | heterologous | any on opposite hand
+Cyan  | same hand    | same hand  | (impossible)
 
 Here's the same thing, overlaid the other way:
 
