@@ -6,7 +6,7 @@ output: html_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE, dev='svg')
 ```
 
 ## R Markdown
@@ -62,9 +62,7 @@ print(tmp)
 
 Maybe people tend to push a little harder when correct? It's small & hard to tell...
 
-
 ```{r}
-# RT choice density, group by finger & facet by correct
 ggplot(dat, aes(x = real_prep_time, fill = finger_chosen)) + 
   geom_density(alpha = 0.4) + 
   facet_wrap(~correct) +
@@ -111,10 +109,10 @@ ggplot(dat, aes(x = real_prep_time, fill = finger_chosen)) +
        subtitle = 'Facet by correct/incorrect & finger combination, color by finger')
 ```
 
-```{r, fig.height=18, fig.width = 12}
+```{r, fig.height=18, fig.width = 16}
 ggplot(dat, aes(x = real_prep_time, fill = finger_chosen)) + 
   geom_density(alpha = 0.4) + 
-  facet_wrap(id + correct ~ label, ncol = 6) +
+    facet_wrap(paste0('correct: ', correct, ', type ', label) ~ id, nrow = 6) +
   geom_rug(aes(colour = finger_chosen), size = 1) +
   labs(x = 'Preparation Time (s)', 
        title = 'Per-finger RTs',
