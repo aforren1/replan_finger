@@ -24,7 +24,6 @@ knitr::opts_chunk$set(warning = FALSE, message = FALSE)
 ```{r}
 library(data.table)
 library(ggplot2)
-library(ggthemes)
 theme_set(theme_minimal())
 
 slider <- function(x, y, window_size = 0.1) {
@@ -211,3 +210,9 @@ dat$label <- as.factor(dat$label)
 
 
 ```
+
+TODO:
+
+ - Force traces/max
+ - 
+ 

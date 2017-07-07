@@ -4,3 +4,8 @@ data/sub007/
 
 .Rproj.user
 *.asv
+
+data/test/
+tfiles/test/
+.Rhistory
+data/.drake
