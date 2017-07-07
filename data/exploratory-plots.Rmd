@@ -92,7 +92,7 @@ Thumb effect is attenuated (probably not enough observations). See per-individua
 ggplot(dat, aes(x = real_prep_time, fill = finger_chosen)) + 
   geom_density(alpha = 0.4) + 
   facet_wrap(id~correct, ncol = 2) +
-  geom_rug(aes(colour = finger_chosen), size = 1, shape = 124) +
+  geom_rug(aes(colour = finger_chosen), size = 1) +
   labs(x = 'Preparation Time (s)', 
      title = 'Per-finger RTs',
      subtitle = 'Facet by correct/incorrect & subject, color by finger')
@@ -115,8 +115,37 @@ ggplot(dat, aes(x = real_prep_time, fill = finger_chosen)) +
 ggplot(dat, aes(x = real_prep_time, fill = finger_chosen)) + 
   geom_density(alpha = 0.4) + 
   facet_wrap(id + correct ~ label, ncol = 6) +
-  geom_rug(aes(colour = finger_chosen), size = 1, shape = 124) +
+  geom_rug(aes(colour = finger_chosen), size = 1) +
   labs(x = 'Preparation Time (s)', 
        title = 'Per-finger RTs',
        subtitle = 'Facet by correct/incorrect & finger combination & subject, color by finger')
 ```
+
+
+I don't have people's handedness, but we can look for biases toward one hand or another per individual:
+
+```{r, fig.height=16, fig.width=18}
+ggplot(dat[first_hand != second_hand], aes(x = real_prep_time, fill = finger_chosen)) + 
+  geom_density(alpha = 0.4, aes(y = ..count..)) + 
+    geom_rug(aes(colour = finger_chosen), size = 1) +
+  facet_wrap(paste0('correct: ', correct, ', ', first_hand, ' to ', second_hand) ~ id, nrow = 4) +
+  labs(x = 'Preparation Time (s)', 
+       title = 'RT differnces when switching between hands',
+       subtitle = 'Each column is a subject')
+```
+
+
+This one takes a bit to grok, but I think the best way is to compare within column, row 1 vs row 2 & row 3 vs row 4. This is comparing switching R->L vs L->R. Nothing obvious jumps out here.
+
+Now switching within the same hand (also remember, less data in this case):
+
+```{r, fig.height=16, fig.width=18}
+ggplot(dat[first_hand == second_hand], aes(x = real_prep_time, fill = finger_chosen)) + 
+  geom_density(alpha = 0.4, aes(y = ..count..)) + 
+    geom_rug(aes(colour = finger_chosen), size = 1) +
+  facet_wrap(paste0('correct: ', correct, ', ', first_hand, ' to ', second_hand) ~ id, nrow = 4) +
+  labs(x = 'Preparation Time (s)', 
+       title = 'RT differnces when switching between hands',
+       subtitle = 'Each column is a subject')
+```
+
