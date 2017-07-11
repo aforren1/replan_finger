@@ -1,3 +1,5 @@
+# figure out error trials
+
 library(data.table)
 library(ggplot2)
 
@@ -13,9 +15,18 @@ slider <- function(x, y, window_size = 0.1) {
   out
 }
 
-wd <- paste0(getwd(), '/jcc')
+#wd <- paste0(getwd(), '/007')
+wd <- getwd()
 filenames <- list.files(path = wd, pattern = '*.csv$', recursive = TRUE, full.names= TRUE)
+# remove garbage files from contention
+filenames <- filenames[!grepl(filenames, pattern = '/archive')]
+filenames <- filenames[!grepl(filenames, pattern = 'test')]
+filenames <- filenames[!grepl(filenames, pattern = 'demo')]
 filenames <- filenames[!grepl(filenames, pattern = '000')]
+
+# remove poorly sampled people (opinion piece)
+# filenames <- filenames[!grepl(filenames, pattern = '001')]
+# filenames <- filenames[!grepl(filenames, pattern = '006')]
 
 dat <- lapply(filenames, fread, header = TRUE)
 dat <- rbindlist(dat)
@@ -44,4 +55,27 @@ ggplot(dat, aes(x = real_prep_time,y = slide_correct, colour = label)) +
   labs(x = 'Preparation Time', y = 'Prop(Correct)') + 
   scale_x_continuous(breaks = seq(0, 0.5, 0.1), 
                      minor_breaks = seq(0, 0.5, 0.05), limits = c(0, .5)) +
-  scale_y_continuous(breaks = seq(0, 1, 0.2))
+  scale_y_continuous(breaks = seq(0, 1, 0.2)) + facet_wrap(~id)
+
+## see P(choice|RT)
+dat[, 'chose_old' := first_image == first_press]
+dat[, 'chose_new' := second_image == first_press]
+dat[, 'chose_null' := chose_old == chose_new] # chose neither old nor new (one of the other choices)
+dat[, 'hand_choice' := ifelse(first_press > 5, 'right', 'left')]
+dat[, 'chose_null_old_hand' := chose_null & (hand_choice == hand1)]
+dat[, 'chose_null_new_hand' := chose_null & !chose_null_old_hand]
+
+dat[, 'slide_old' := slider(real_prep_time, chose_old, window_size), by = c('label')]
+dat[, 'slide_new' := slider(real_prep_time, chose_new, window_size), by = c('label')]
+dat[, 'slide_null' := slider(real_prep_time, chose_null, window_size), by = c('label')]
+dat[, 'chose_null_old_hand_slide' := slider(real_prep_time, chose_null_old_hand, window_size), by = c('label')]
+dat[, 'chose_null_new_hand_slide' := slider(real_prep_time, chose_null_new_hand, window_size), by = c('label')]
+
+
+ggplot(dat, aes(x = real_prep_time, y = slide_old)) + 
+  geom_line(colour = 'red', size = 1) +
+  geom_line(aes(y = slide_new), colour = 'green', size = 1) +
+  geom_line(aes(y = chose_null_old_hand_slide), colour = 'black', size = 1) +
+  geom_line(aes(y = chose_null_new_hand_slide), colour = 'gray', size = 1) +
+  facet_wrap(~label) + 
+  xlim(c(0, 0.75))

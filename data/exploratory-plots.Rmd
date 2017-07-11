@@ -1,0 +1,149 @@
+---
+title: "Untitled"
+author: "Alex Forrence"
+date: "July 7, 2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE, dev='svg')
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r tmp}
+library(data.table)
+library(ggplot2)
+
+dat <-  fread('extended_data.csv') # comes from matlab file write_extended_data.m
+dat <- dat[real_prep_time > 0]
+dat <- dat[first_image != second_image]
+dat <- dat[!is.nan(first_press)]
+dat[, 'first_hand' := ifelse(first_image > 5, 'right', 'left')]
+dat[, 'second_hand' := ifelse(second_image > 5, 'right', 'left')]
+
+fings <- c('pinky', 'ring', 'middle', 'index', 'thumb')
+fingers <- data.frame(first_image = 1:10, finger1 = c(fings, rev(fings)))
+dat <- merge(dat, fingers, by = 'first_image', sort = FALSE)
+names(fingers) <- c('second_image', 'finger2')
+dat <- merge(dat, fingers, by = 'second_image', sort = FALSE)
+
+dat[, 'label' := ifelse(first_hand == second_hand, 'same_hand',
+                        ifelse(finger1 == finger2, 'homologous', 'heterologous'))]
+names(dat)[17:18] <- c('first_finger', 'second_finger')
+
+dat[, 'hand_chosen' := ifelse(first_press > 5, 'right', 'left')]
+names(fingers) <- c('first_press', 'finger_chosen')
+dat <- merge(dat, fingers, by = 'first_press', sort = FALSE)
+
+```
+
+```{r}
+
+ggplot(dat, aes(x = real_prep_time, y = max_force, colour = factor(correct))) + 
+  geom_point() + 
+  facet_wrap(~id) +
+  labs(x = 'Preparation Time (s)',
+       y = 'Maximum Force (N)',
+       title = 'Force as a function of preparation time',
+       subtitle = 'Color is correct/incorrect, y is force in newtons, facetted by subject')
+```
+
+Nothing super clear here. For another view, here's mean/sd.
+```{r}
+tmp <- dat[, list(mean(max_force), sd(max_force)), by = c('correct', 'id')]
+names(tmp)[3:4] <- c('mean', 'sd')
+print(tmp)
+```
+
+Maybe people tend to push a little harder when correct? It's small & hard to tell...
+
+```{r}
+ggplot(dat, aes(x = real_prep_time, fill = finger_chosen)) + 
+  geom_density(alpha = 0.4) + 
+  facet_wrap(~correct) +
+  labs(x = 'Preparation Time (s)', 
+       title = 'Per-finger RTs',
+       subtitle = 'Facet by correct/incorrect, color by finger')
+```
+
+Maybe a difference in thumb? But now change the y-axis to count.
+
+```{r}
+# RT choice density, group by finger & facet by correct
+ggplot(dat, aes(x = real_prep_time, fill = finger_chosen)) + 
+  geom_density(alpha = 0.4, aes(y = ..count..)) + 
+  facet_wrap(~correct) +
+  labs(x = 'Preparation Time (s)', 
+       title = 'Per-finger RTs',
+       subtitle = 'Facet by correct/incorrect, color by finger')
+```
+
+Thumb effect is attenuated (probably not enough observations). See per-individual densities (back to relative scaling, but with points below to show # observations):
+
+
+```{r, fig.height = 18, fig.width = 8}
+ggplot(dat, aes(x = real_prep_time, fill = finger_chosen)) + 
+  geom_density(alpha = 0.4) + 
+  facet_wrap(id~correct, ncol = 2) +
+  geom_rug(aes(colour = finger_chosen), size = 1) +
+  labs(x = 'Preparation Time (s)', 
+     title = 'Per-finger RTs',
+     subtitle = 'Facet by correct/incorrect & subject, color by finger')
+```
+
+Jury is out on RT differences between fingers.
+
+Break it down one more time: Now heterologous/homologous/same hand:
+
+```{r}
+ggplot(dat, aes(x = real_prep_time, fill = finger_chosen)) + 
+  geom_density(alpha = 0.4) + 
+  facet_wrap(label ~ correct, ncol = 2) +
+  labs(x = 'Preparation Time (s)', 
+       title = 'Per-finger RTs',
+       subtitle = 'Facet by correct/incorrect & finger combination, color by finger')
+```
+
+```{r, fig.height=18, fig.width = 16}
+ggplot(dat, aes(x = real_prep_time, fill = finger_chosen)) + 
+  geom_density(alpha = 0.4) + 
+    facet_wrap(paste0('correct: ', correct, ', type ', label) ~ id, nrow = 6) +
+  geom_rug(aes(colour = finger_chosen), size = 1) +
+  labs(x = 'Preparation Time (s)', 
+       title = 'Per-finger RTs',
+       subtitle = 'Facet by correct/incorrect & finger combination & subject, color by finger')
+```
+
+
+I don't have people's handedness, but we can look for biases toward one hand or another per individual:
+
+```{r, fig.height=16, fig.width=18}
+ggplot(dat[first_hand != second_hand], aes(x = real_prep_time, fill = finger_chosen)) + 
+  geom_density(alpha = 0.4, aes(y = ..count..)) + 
+    geom_rug(aes(colour = finger_chosen), size = 1) +
+  facet_wrap(paste0('correct: ', correct, ', ', first_hand, ' to ', second_hand) ~ id, nrow = 4) +
+  labs(x = 'Preparation Time (s)', 
+       title = 'RT differnces when switching between hands',
+       subtitle = 'Each column is a subject')
+```
+
+
+This one takes a bit to grok, but I think the best way is to compare within column, row 1 vs row 2 & row 3 vs row 4. This is comparing switching R->L vs L->R. Nothing obvious jumps out here.
+
+Now switching within the same hand (also remember, less data in this case):
+
+```{r, fig.height=16, fig.width=18}
+ggplot(dat[first_hand == second_hand], aes(x = real_prep_time, fill = finger_chosen)) + 
+  geom_density(alpha = 0.4, aes(y = ..count..)) + 
+    geom_rug(aes(colour = finger_chosen), size = 1) +
+  facet_wrap(paste0('correct: ', correct, ', ', first_hand, ' to ', second_hand) ~ id, nrow = 4) +
+  labs(x = 'Preparation Time (s)', 
+       title = 'RT differnces when switching between hands',
+       subtitle = 'Each column is a subject')
+```
+
