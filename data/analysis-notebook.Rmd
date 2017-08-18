@@ -1,12 +1,12 @@
 ---
 title: "Replanning"
 output:
-  html_notebook:
-    code_folding: hide
+  html_document:
     toc: yes
     fig_height: 8
     fig_width: 12
-  html_document:
+  html_notebook:
+    code_folding: hide
     toc: yes
     fig_height: 8
     fig_width: 12
@@ -41,7 +41,7 @@ slider <- function(x, y, window_size = 0.1) {
 ## Import/clean data
 
 ```{r clean}
-dat <-  fread('extended_table.csv') # comes from matlab file write_extended_data.m
+dat <-  fread('extended_data.csv') # comes from matlab file write_extended_data.m
 dat <- dat[real_prep_time > 0]
 dat <- dat[first_image != second_image]
 dat <- dat[!is.nan(first_press)]
@@ -75,9 +75,9 @@ ggplot(dat, aes(x = real_prep_time, y = slide_correct_group, colour = label)) +
        title = 'Population-level correctness',
        subtitle = 'Histograms represent observation counts.')
 
-ggplot(dat, aes(x = real_prep_time, y = slide_correct_id, colour = label)) +
-  geom_histogram(data = dat, aes(x = real_prep_time, y = ..density../10, colour = NULL),
-               bins = 50, alpha = 0.6) +
+ggplot(dat[block > 1], aes(x = real_prep_time, y = slide_correct_id, colour = label)) +
+  geom_histogram(data = dat, aes(x = real_prep_time, y = ..density../10, colour = NULL, fill = label),
+               bins = 50, alpha = 0.6, position = 'identity') +
   geom_line(size = 1) + 
   xlim(c(0, 0.75)) +
   labs(x = 'Preparation Time (s)',
@@ -121,12 +121,12 @@ dat[, 'slide_null_new_hand_id' := slider(real_prep_time, chose_null_new_hand), b
 ```
 
 ```{r choice_slide_plot, fig.width=12, fig.height=5}
-
-tmp_dat <- dat[, c(4, 11, 18, 27:28, 30:31)]
+# id, real_prep_time, slid_old_group, slide_new_group, slide_null_old_hand_group, slide_null_new_hand_group
+tmp_dat <- dat[, c(4, 11, 19, 28:29, 31:32)]
 tmp_dat <- melt(tmp_dat, id = c('id', 'label', 'real_prep_time'))
 
-ggplot(tmp_dat, aes(x = real_prep_time, y = value, colour = variable)) + 
-  geom_line(size = 1) + 
+ggplot(tmp_dat, aes(x = real_prep_time, y = value, colour = variable)) +
+  geom_line(size = 1) +
   xlim(c(0, 0.75)) +
   facet_wrap(~label) +
   labs(x = 'Preparation Time (s)',
@@ -181,7 +181,7 @@ Thoughts:
 To make sure it's not just one person driving the effect, let's see all individuals (probably sparse):
 
 ```{r, fig.width=12, fig.height=20}
-tmp_dat <- dat[, c(4, 11, 18, 32:33, 35:36)]
+tmp_dat <- dat[, c(4, 11, 19, 33:34, 36:37)]
 tmp_dat <- melt(tmp_dat, id = c('id', 'label', 'real_prep_time'))
 
 ggplot(tmp_dat, aes(x = real_prep_time, y = value, colour = variable)) + 
@@ -192,7 +192,8 @@ ggplot(tmp_dat, aes(x = real_prep_time, y = value, colour = variable)) +
        y = 'Proportion Choice',
        title = 'Choice Proportions (Individual)') +
   theme(legend.position = "bottom") +
-  guides(colour = guide_legend(title = NULL))
+  guides(colour = guide_legend(title = NULL)) +
+  geom_rug()
 ```
  
  

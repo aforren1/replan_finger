@@ -9,3 +9,4 @@ data/test/
 tfiles/test/
 .Rhistory
 data/.drake
+*/.Rhistory
